@@ -1,0 +1,61 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body { font-family: Arial, sans-serif; font-size: 15px; background: #f4f5f7; color: #1a1a2e; padding: 0 0 48px; }
+
+header { display: flex; align-items: center; justify-content: space-between; background: #1a1a2e; color: #fff; padding: 14px 24px; }
+
+header h1 { font-size: 1.2rem; font-weight: 700; }
+
+.status-badge { font-size: 0.78rem; padding: 4px 10px; border-radius: 12px; background: #444; color: #ccc; font-weight: 600; }
+
+.status-badge.connected { background: #1a7a4a; color: #d4f5e3; }
+
+.status-badge.wrong-network { background: #8b2020; color: #ffd6d6; }
+
+main { max-width: 680px; margin: 32px auto; padding: 0 16px; display: flex; flex-direction: column; gap: 24px; }
+
+section { background: #fff; border: 1px solid #dde1e9; border-radius: 8px; padding: 20px 24px; }
+
+section h2 { font-size: 1rem; font-weight: 700; margin-bottom: 16px; border-bottom: 1px solid #eee; padding-bottom: 8px; }
+
+#wallet-info p { margin-bottom: 6px; font-size: 0.9rem; word-break: break-all; }
+
+.label { font-weight: 600; color: #555; margin-right: 6px; }
+
+.form-group { margin-bottom: 14px; }
+
+.form-group label { display: block; font-size: 0.85rem; font-weight: 600; color: #444; margin-bottom: 5px; }
+
+.form-group input { width: 100%; padding: 9px 12px; border: 1px solid #c5cad3; border-radius: 5px; font-size: 0.95rem; outline: none; }
+
+button { cursor: pointer; padding: 9px 18px; border: none; border-radius: 5px; font-size: 0.9rem; font-weight: 600; }
+
+button:disabled { opacity: 0.55; cursor: not-allowed; }
+
+#btn-connect { background: #4a6cf7; color: #fff; }
+
+#btn-create-escrow { background: #1a7a4a; color: #fff; margin-top: 4px; }
+
+.btn-action { background: #4a6cf7; color: #fff; font-size: 0.8rem; padding: 5px 10px; margin-right: 4px; }
+
+.btn-refund { background: #b94040; }
+
+.status-msg { margin-top: 10px; font-size: 0.85rem; min-height: 20px; word-break: break-all; }
+
+.status-msg.info { color: #2255aa; }
+.status-msg.success { color: #1a7a4a; }
+.status-msg.error { color: #b94040; }
+
+table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid #eee; }
+
+th { font-weight: 700; color: #555; background: #f8f9fb; }
+
+td.status-pending { color: #b97a00; font-weight: 600; }
+td.status-released { color: #1a7a4a; font-weight: 600; }
+td.status-refunded { color: #b94040; font-weight: 600; }
+
+#escrow-empty { color: #888; font-size: 0.9rem; }
+
+.hidden { display: none !important; }

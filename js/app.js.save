@@ -1,0 +1,150 @@
+nano ~/GlobalEscrowX/js/app.jsnano ~/GlobalEscrowX/js/app.jsnano ~/GlobalEscrowX/js/app.jsnano ~/GlobalEscrowX/js/app.jsnano ~/GlobalEscrowX/js/app.jsnano ~/GlobalEscrowX/js/app.jsnano ~/GlobalEscrowX/js/app.jsnano ~/GlobalEscrowX/js/app.jsnano ~/GlobalEscrowX/js/app.jsnano ~/GlobalEscrowX/js/app.jsnano ~/GlobalEscrowX/js/app.jsnano ~/GlobalEscrowX/js/app.jsnano ~/GlobalEscrowX/js/app.jsnano ~/GlobalEscrowX/js/app.jsnano ~/GlobalEscrowX/js/app.jsnano ~/GlobalEscrowX/js/app.jsnano ~/GlobalEscrowX/js/app.jsnano ~/GlobalEscrowX/js/app.jsnano ~/GlobalEscrowX/js/app.jsnano ~/GlobalEscrowX/js/app.jsnano ~/GlobalEscrowX/js/app.jsnano ~/GlobalEscrowX/js/app.jsnano ~/GlobalEscrowX/js/app.jsnano ~/GlobalEscrowX/js/app.jsnano ~/GlobalEscrowX/js/app.jsnano ~/GlobalEscrowX/js/app.jsnano ~/GlobalEscrowX/js/app.jsnano ~/GlobalEscrowX/js/app.jsnano ~/GlobalEscrowX/js/app.jsnano ~/GlobalEscrowX/js/app.jsnano ~/GlobalEscrowX/js/app.jsnano ~/GlobalEscrowX/js/app.jsnano ~/GlobalEscrowX/js/app.jsnano ~/GlobalEscrowX/js/app.jsnano ~/GlobalEscrowX/js/app.jsnano ~/GlobalEscrowX/js/app.jsnano ~/GlobalEscrowX/js/app.jsnano ~/GlobalEscrowX/js/app.jsnano ~/GlobalEscrowX/js/app.jsvconst btnConnect      = document.getElementById("btn-connect");
+const networkStatus   = document.getElementById("network-status");
+const walletInfo      = document.getElementById("wallet-info");
+const walletAddress   = document.getElementById("wallet-address");
+const trxBalance      = document.getElementById("trx-balance");
+const usdtBalance     = document.getElementById("usdt-balance");
+const createSection   = document.getElementById("create-section");
+const inputSeller     = document.getElementById("input-seller");
+const inputAmount     = document.getElementById("input-amount");
+const btnCreateEscrow = document.getElementById("btn-create-escrow");
+const createStatus    = document.getElementById("create-status");
+const escrowSection   = document.getElementById("escrow-section");
+const escrowEmpty     = document.getElementById("escrow-empty");
+const escrowTable     = document.getElementById("escrow-table");
+const escrowTbody     = document.getElementById("escrow-tbody");
+
+function setStatus(msg, type) {
+  createStatus.textContent = msg;
+  createStatus.className = "status-msg " + (type || "info");
+}
+
+function setNetworkBadge(isNile) {
+  if (isNile) {
+    networkStatus.textContent = "Nile Testnet";
+    networkStatus.className = "status-badge connected";
+  } else {
+    networkStatus.textContent = "Wrong Network";
+    networkStatus.className = "status-badge wrong-network";
+  }
+}
+
+function showWalletUI() {
+  walletInfo.classList.remove("hidden");
+  createSection.classList.remove("hidden");
+  escrowSection.classList.remove("hidden");
+  btnConnect.textContent = "Disconnect";
+}
+
+function hideWalletUI() {
+  walletInfo.classList.add("hidden");
+  createSection.classList.add("hidden");
+  escrowSection.classList.add("hidden");
+  btnConnect.textContent = "Connect Wallet";
+  networkStatus.textContent = "Not Connected";
+  networkStatus.className = "status-badge";
+}
+
+function updateWalletDisplay() {
+  walletAddress.textContent = WalletState.address || "—";
+  trxBalance.textContent    = WalletState.trxBalance || "—";
+  usdtBalance.textContent   = WalletState.usdtBalance || "—";
+  setNetworkBadge(WalletState.isNile);
+}
+
+function renderEscrows(escrows) {
+  escrowTbody.innerHTML = "";
+  if (!escrows || escrows.length === 0) {
+    escrowEmpty.classList.remove("hidden");
+    escrowTable.classList.add("hidden");
+    return;
+  }
+  escrowEmpty.classList.add("hidden");
+  escrowTable.classList.remove("hidden");
+  for (const e of escrows) {
+    const tr = document.createElement("tr");
+    tr.innerHTML =
+      "<td>" + e.id + "</td>" +
+      "<td title='" + e.seller + "'>" + shortAddress(e.seller) + "</td>" +
+      "<td>" + e.amountUsdt + "</td>" +
+      "<td class='status-" + e.status.toLowerCase() + "'>" + e.status + "</td>" +
+      "<td>" + buildActionCell(e) + "</td>";
+    escrowTbody.appendChild(tr);
+  }
+}
+
+function buildActionCell(e) {
+  if (e.status !== "Pending") return "—";
+  return "<button class='btn-action' onclick='handleRelease(" + e.id + ")'>Release</button>" +
+         "<button class='btn-action btn-refund' onclick='handleRefund(" + e.id + ")'>Refund</button>";
+}
+
+async function handleRelease(escrowId) {
+  setStatus("Releasing escrow #" + escrowId + "...", "info");
+  const result = await releaseEscrow(escrowId);
+  if (result.success) {
+    setStatus("Released! TX: " + result.txId, "success");
+    await loadEscrows();
+  } else {
+    setStatus("Release failed: " + result.error, "error");
+  }
+}
+
+async function handleRefund(escrowId) {
+  setStatus("Refunding escrow #" + escrowId + "...", "info");
+  const result = await refundEscrow(escrowId);
+  if (result.success) {
+    setStatus("Refunded! TX: " + result.txId, "success");
+    await loadEscrows();
+  } else {
+    setStatus("Refund failed: " + result.error, "error");
+  }
+}
+
+async function loadEscrows() {
+  if (!WalletState.address) return;
+  const escrows = await fetchBuyerEscrows(WalletState.address);
+  renderEscrows(escrows);
+}
+
+btnConnect.addEventListener("click", async () => {
+  if (WalletState.isConnected) {
+    WalletState.address     = null;
+    WalletState.isConnected = false;
+    WalletState.trxBalance  = null;
+    WalletState.usdtBalance = null;
+    WalletState.isNile      = false;
+    hideWalletUI();
+    return;
+  }
+  btnConnect.disabled = true;
+  btnConnect.textContent = "Connecting...";
+  const result = await connectWallet();
+  if (!result.success) {
+    alert(result.error);
+    btnConnect.disabled = false;
+    btnConnect.textContent = "Connect Wallet";
+    return;
+  }
+  updateWalletDisplay();
+  showWalletUI();
+  await loadEscrows();
+  btnConnect.disabled = false;
+});
+
+btnCreateEscrow.addEventListener("click", async () => {
+  const seller = inputSeller.value.trim();
+  const amount = parseFloat(inputAmount.value);
+  if (!seller || !seller.startsWith("T")) {
+    setStatus("Enter a valid TRON seller address (starts with T).", "error");
+    return;
+  }
+  if (!amount || amount <= 0) {
+    setStatus("Enter a valid USDT amount.", "error");
+    return;
+  }
+  if (!WalletState.isNile) {
+    setStatus("Please switch TronLink to the Nile Testnet.", "error");
+    return;
+  }
+  btnCreateEscrow.
