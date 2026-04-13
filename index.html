@@ -4,174 +4,270 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>GlobalEscrowX</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <style>
-:root{--bg:#0f0f11;--surface:#1a1a1f;--border:#2a2a32;--green:#4ade80;--green-dim:#1a3a25;--text:#f0f0f4;--muted:#6b6b7a;--danger:#f87171;--info:#7dd3fc}
+:root{--black:#060608;--surface:#0e0e12;--border:#1e1e28;--border2:#2a2a38;--gold:#c9a84c;--gold-light:#e8cc7a;--gold-dim:rgba(201,168,76,0.08);--gold-glow:rgba(201,168,76,0.2);--white:#f5f3ee;--muted:#6b6878;--muted2:#4a4858;--danger:#e05c5c;--info:#5c9fe0}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:32px 16px 64px}
-.logo{font-size:.9rem;font-weight:700;letter-spacing:.1em;color:var(--green);margin-bottom:40px;text-transform:uppercase}
-.steps{display:flex;width:100%;max-width:480px;margin-bottom:40px}
-.step{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;position:relative}
-.step:not(:last-child)::after{content:'';position:absolute;top:13px;left:50%;width:100%;height:1px;background:var(--border);z-index:0}
-.step.done:not(:last-child)::after{background:var(--green)}
-.snum{width:26px;height:26px;border-radius:50%;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;color:var(--muted);background:var(--bg);z-index:1;position:relative}
-.step.done .snum{background:var(--green);border-color:var(--green);color:#000}
-.step.active .snum{border-color:var(--text);color:var(--text)}
-.slabel{font-size:.6rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);text-align:center}
-.step.active .slabel{color:var(--text)}
-.step.done .slabel{color:var(--green)}
-.card{width:100%;max-width:440px;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:26px}
-.ctitle{font-size:1.15rem;font-weight:700;margin-bottom:6px}
-.csub{font-size:.84rem;color:var(--muted);margin-bottom:22px;line-height:1.6}
-.field{margin-bottom:14px}
-.field label{display:block;font-size:.7rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
-.field input{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 13px;font-size:.9rem;color:var(--text);outline:none}
-.field input:focus{border-color:var(--green)}
-.btn{width:100%;padding:11px;border-radius:10px;font-size:.88rem;font-weight:700;cursor:pointer;margin-top:7px}
-.btn:disabled{opacity:.4;cursor:not-allowed}
-.btn-p{background:var(--green);border:none;color:#000}
-.btn-s{background:transparent;border:1px solid var(--border);color:var(--text)}
-.btn-d{background:transparent;border:1px solid var(--danger);color:var(--danger)}
-.wbadge{display:flex;align-items:center;gap:10px;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:11px 13px;margin-bottom:14px}
-.wbadge.on{border-color:var(--green)}
-.wdot{width:8px;height:8px;border-radius:50%;background:var(--border);flex-shrink:0}
-.wdot.on{background:var(--green)}
+body{font-family:'DM Sans',sans-serif;background:var(--black);color:var(--white);min-height:100vh;overflow-x:hidden}
+.bg-canvas{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+.bg-canvas::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(201,168,76,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(201,168,76,0.03) 1px,transparent 1px);background-size:60px 60px;animation:gridshift 20s linear infinite}
+@keyframes gridshift{0%{transform:translate(0,0)}100%{transform:translate(60px,60px)}}
+.orb{position:absolute;border-radius:50%;filter:blur(80px);animation:orbdrift 12s ease-in-out infinite alternate}
+.orb1{width:400px;height:400px;background:rgba(201,168,76,0.06);top:-100px;right:-100px}
+.orb2{width:300px;height:300px;background:rgba(92,159,224,0.04);bottom:10%;left:-80px;animation-delay:-6s}
+.orb3{width:200px;height:200px;background:rgba(201,168,76,0.04);bottom:30%;right:20%;animation-delay:-3s}
+@keyframes orbdrift{0%{transform:translate(0,0) scale(1)}100%{transform:translate(30px,20px) scale(1.1)}}
+.page{position:relative;z-index:1}
+nav{display:flex;align-items:center;justify-content:space-between;padding:20px 40px;border-bottom:1px solid var(--border);backdrop-filter:blur(12px);background:rgba(6,6,8,0.7);position:sticky;top:0;z-index:100}
+.nav-logo{font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:600;letter-spacing:0.08em;color:var(--gold);text-decoration:none}
+.nav-logo span{color:var(--white);font-weight:400}
+.nav-badge{font-size:0.68rem;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);border:1px solid var(--border2);padding:4px 12px;border-radius:20px}
+.hero{text-align:center;padding:80px 24px 60px;max-width:700px;margin:0 auto;animation:fadein 0.8s ease both}
+@keyframes fadein{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.hero-eyebrow{font-size:0.72rem;font-weight:500;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);margin-bottom:24px;display:flex;align-items:center;justify-content:center;gap:12px}
+.hero-eyebrow::before,.hero-eyebrow::after{content:'';width:40px;height:1px;background:var(--gold);opacity:0.4}
+.hero h1{font-family:'Cormorant Garamond',serif;font-size:clamp(2.8rem,6vw,4.5rem);font-weight:600;line-height:1.1;margin-bottom:20px}
+.hero h1 em{font-style:italic;background:linear-gradient(135deg,var(--gold),var(--gold-light));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero p{font-size:1rem;font-weight:300;color:rgba(245,243,238,0.6);line-height:1.7;margin-bottom:40px}
+.hero-cta{display:inline-flex;align-items:center;gap:10px;background:var(--gold);color:#000;font-size:0.88rem;font-weight:600;padding:14px 32px;border-radius:40px;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;position:relative;overflow:hidden;transition:transform 0.2s,box-shadow 0.2s}
+.hero-cta::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent);transform:translateX(-100%);animation:shimmer 2.5s infinite}
+@keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(200%)}}
+.hero-cta:hover{transform:scale(1.03);box-shadow:0 0 40px var(--gold-glow)}
+.trust-bar{display:flex;align-items:center;justify-content:center;gap:32px;flex-wrap:wrap;padding:20px 24px;border-top:1px solid var(--border);border-bottom:1px solid var(--border);background:var(--surface)}
+.trust-item{font-size:0.78rem;color:var(--muted)}
+.features{max-width:960px;margin:0 auto;padding:80px 24px;display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+@media(max-width:640px){.features{grid-template-columns:1fr}nav{padding:16px 20px}.nav-badge{display:none}}
+.feature{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px;transition:border-color 0.3s,transform 0.3s}
+.feature:hover{border-color:rgba(201,168,76,0.3);transform:translateY(-3px)}
+.feature-icon{font-size:1.5rem;margin-bottom:16px}
+.feature h3{font-family:'Cormorant Garamond',serif;font-size:1.15rem;font-weight:600;margin-bottom:8px}
+.feature p{font-size:0.82rem;font-weight:300;color:rgba(245,243,238,0.5);line-height:1.7}
+.steps-wrap{max-width:560px;margin:0 auto;padding:48px 24px 0}
+.steps{display:flex}
+.step{flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;position:relative}
+.step:not(:last-child)::after{content:'';position:absolute;top:18px;left:50%;width:100%;height:1px;background:var(--border2);z-index:0;transition:background 0.6s}
+.step.done:not(:last-child)::after{background:var(--gold)}
+.snum{width:36px;height:36px;border-radius:50%;border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:500;color:var(--muted2);background:var(--surface);z-index:1;position:relative;transition:all 0.4s;font-family:'DM Mono',monospace}
+.step.done .snum{background:var(--gold);border-color:var(--gold);color:#000;box-shadow:0 0 20px var(--gold-glow)}
+.step.active .snum{border-color:var(--gold);color:var(--gold)}
+.slabel{font-size:0.62rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted2);text-align:center;line-height:1.3}
+.step.active .slabel{color:var(--gold)}
+.step.done .slabel{color:rgba(201,168,76,0.6)}
+.card-wrap{max-width:520px;margin:32px auto 64px;padding:0 24px}
+.card{background:var(--surface);border:1px solid var(--border2);border-radius:20px;padding:32px;position:relative;overflow:hidden;animation:slidein 0.4s ease both}
+@keyframes slidein{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:0.4}
+.card-icon{width:48px;height:48px;border-radius:12px;border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;margin-bottom:20px;font-size:1.3rem;background:var(--gold-dim)}
+.ctitle{font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:600;margin-bottom:8px}
+.csub{font-size:0.84rem;font-weight:300;color:rgba(245,243,238,0.5);margin-bottom:28px;line-height:1.7}
+.field{margin-bottom:16px}
+.field label{display:block;font-size:0.68rem;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:7px}
+.field input{width:100%;background:var(--black);border:1px solid var(--border2);border-radius:10px;padding:12px 16px;font-family:'DM Sans',sans-serif;font-size:0.92rem;color:var(--white);outline:none;transition:border-color 0.2s,box-shadow 0.2s}
+.field input:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-dim)}
+.field input::placeholder{color:var(--muted2)}
+.amount-wrap{position:relative}
+.amount-prefix{position:absolute;left:16px;top:50%;transform:translateY(-50%);font-family:'DM Mono',monospace;font-size:0.8rem;color:var(--gold);font-weight:500}
+.btn{width:100%;padding:13px 20px;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:0.88rem;font-weight:500;cursor:pointer;margin-top:8px;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:8px;position:relative;overflow:hidden}
+.btn:disabled{opacity:0.35;cursor:not-allowed}
+.btn-p{background:var(--gold);border:none;color:#000;font-weight:600}
+.btn-p::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.15),transparent);transform:translateX(-100%);animation:shimmer 3s 1s infinite}
+.btn-p:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 8px 30px var(--gold-glow)}
+.btn-s{background:transparent;border:1px solid var(--border2);color:rgba(245,243,238,0.7)}
+.btn-s:hover:not(:disabled){border-color:var(--muted);color:var(--white)}
+.btn-d{background:transparent;border:1px solid rgba(224,92,92,0.3);color:rgba(224,92,92,0.8)}
+.btn-d:hover:not(:disabled){border-color:var(--danger);color:var(--danger)}
+.wbadge{display:flex;align-items:center;gap:12px;background:var(--black);border:1px solid var(--border2);border-radius:12px;padding:14px 16px;margin-bottom:16px;transition:border-color 0.4s,box-shadow 0.4s}
+.wbadge.on{border-color:rgba(201,168,76,0.3);box-shadow:0 0 20px var(--gold-dim)}
+.wdot{width:8px;height:8px;border-radius:50%;background:var(--border2);flex-shrink:0;transition:background 0.4s,box-shadow 0.4s}
+.wdot.on{background:var(--gold);box-shadow:0 0 8px var(--gold)}
 .winfo{flex:1}
-.wlabel{font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
-.waddr{font-size:.8rem;font-family:monospace;color:var(--text);margin-top:2px}
-.wbal{font-size:.72rem;color:var(--muted)}
-.dbox{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:13px;margin-bottom:16px}
-.drow{display:flex;justify-content:space-between;padding:5px 0;font-size:.84rem}
+.wlabel{font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em}
+.waddr{font-size:0.82rem;font-family:'DM Mono',monospace;color:var(--white);margin-top:3px}
+.wbal{font-size:0.72rem;color:var(--muted);margin-left:auto;font-family:'DM Mono',monospace}
+.dbox{background:var(--black);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:20px}
+.drow{display:flex;justify-content:space-between;align-items:center;padding:7px 0;font-size:0.86rem}
 .drow:not(:last-child){border-bottom:1px solid var(--border)}
-.drow span:first-child{color:var(--muted)}
-.drow span:last-child{font-family:monospace;font-size:.78rem;font-weight:600}
-.lbox{display:flex;align-items:center;gap:8px;background:var(--bg);border:1px solid var(--green);border-radius:10px;padding:9px 13px;margin-bottom:16px}
-.lbox span{flex:1;font-family:monospace;font-size:.7rem;color:var(--green);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.cbtn{background:var(--green);color:#000;border:none;border-radius:6px;padding:5px 11px;font-size:.74rem;font-weight:700;cursor:pointer;white-space:nowrap}
-.linklabel{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px}
-.inst{display:flex;gap:11px;padding:9px 0;border-bottom:1px solid var(--border)}
+.drow span:first-child{color:var(--muted);font-size:0.78rem;text-transform:uppercase;letter-spacing:0.06em}
+.drow span:last-child{font-family:'DM Mono',monospace;font-size:0.8rem;color:var(--white);font-weight:500}
+.amount-val{color:var(--gold);font-size:1rem;font-family:'Cormorant Garamond',serif;font-weight:600}
+.link-section{margin-bottom:20px}
+.link-label{font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px}
+.lbox{display:flex;align-items:center;gap:10px;background:var(--black);border:1px solid rgba(201,168,76,0.2);border-radius:10px;padding:11px 14px}
+.lbox span{flex:1;font-family:'DM Mono',monospace;font-size:0.7rem;color:var(--gold);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cbtn{background:var(--gold);color:#000;border:none;border-radius:7px;padding:6px 14px;font-size:0.72rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap}
+.inst{display:flex;gap:14px;padding:12px 0;border-bottom:1px solid var(--border)}
 .inst:last-child{border-bottom:none}
-.inum{width:20px;height:20px;border-radius:50%;background:var(--border);color:var(--muted);font-size:.68rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
-.itext{font-size:.84rem;line-height:1.5}
-.itext strong{color:var(--green)}
-.smsg{font-size:.78rem;margin-top:9px;min-height:16px;line-height:1.4}
-.msg-i{color:var(--info)}.msg-s{color:var(--green)}.msg-e{color:var(--danger)}
-.pill-g{display:inline-flex;align-items:center;gap:4px;padding:2px 9px;border-radius:20px;font-size:.7rem;font-weight:700;background:var(--green-dim);color:var(--green)}
+.inum{width:24px;height:24px;border-radius:50%;border:1px solid var(--border2);color:var(--muted);font-size:0.7rem;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;font-family:'DM Mono',monospace}
+.itext{font-size:0.85rem;font-weight:300;line-height:1.6;color:rgba(245,243,238,0.7)}
+.itext strong{color:var(--gold);font-weight:500}
+.smsg{font-size:0.78rem;margin-top:12px;min-height:18px;line-height:1.5}
+.msg-i{color:var(--info)}.msg-s{color:var(--gold)}.msg-e{color:var(--danger)}
+.pill-g{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:0.7rem;font-weight:500;background:rgba(74,222,128,0.08);color:#4ade80;border:1px solid rgba(74,222,128,0.15)}
 .dot{width:5px;height:5px;border-radius:50%;background:currentColor}
-.hr{border:none;border-top:1px solid var(--border);margin:16px 0}
-.sico{width:52px;height:52px;border-radius:50%;background:var(--green-dim);border:1px solid var(--green);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:1.5rem}
-.txh{font-family:monospace;font-size:.68rem;color:var(--muted);word-break:break-all;text-align:center;margin-top:8px}
+.dot.pulse{animation:pulse 1.5s ease infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+.hr{border:none;border-top:1px solid var(--border);margin:24px 0}
+.sico{width:72px;height:72px;border-radius:50%;border:1px solid rgba(201,168,76,0.3);background:var(--gold-dim);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:2rem;animation:popIn 0.5s cubic-bezier(0.34,1.56,0.64,1) both;box-shadow:0 0 40px var(--gold-glow)}
+@keyframes popIn{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+.txh{font-family:'DM Mono',monospace;font-size:0.65rem;color:var(--muted);word-break:break-all;text-align:center;margin-top:10px;background:var(--black);border:1px solid var(--border);border-radius:8px;padding:10px 12px}
+footer{border-top:1px solid var(--border);padding:28px 40px;display:flex;align-items:center;justify-content:space-between;background:var(--surface)}
+.footer-logo{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:600;color:var(--gold)}
+.footer-note{font-size:0.72rem;color:var(--muted)}
 .hidden{display:none!important}
 </style>
 </head>
 <body>
-<div class="logo">GlobalEscrowX</div>
-<div class="steps">
-  <div class="step active" id="s1"><div class="snum">1</div><div class="slabel">Create deal</div></div>
-  <div class="step" id="s2"><div class="snum">2</div><div class="slabel">Seller accepts</div></div>
-  <div class="step" id="s3"><div class="snum">3</div><div class="slabel">Buyer pays</div></div>
-  <div class="step" id="s4"><div class="snum">4</div><div class="slabel">Release funds</div></div>
-</div>
-<div class="card" id="p1">
-  <div class="ctitle">Create a deal</div>
-  <div class="csub">Enter details and connect your wallet. No address typing needed.</div>
-  <div class="field"><label>Your email (buyer)</label><input id="f-buyer" type="email" placeholder="you@example.com"/></div>
-  <div class="field"><label>Seller email</label><input id="f-seller" type="email" placeholder="seller@example.com"/></div>
-  <div class="field"><label>Amount (USDT)</label><input id="f-amount" type="number" placeholder="0.00" min="0.01" step="0.01"/></div>
-  <div class="hr"></div>
-  <div class="wbadge" id="wb1"><div class="wdot" id="wd1"></div><div class="winfo"><div class="wlabel">Your wallet (buyer)</div><div class="waddr" id="wa1">Not connected</div></div><div class="wbal hidden" id="wbal1"></div></div>
-  <button class="btn btn-s" id="btn-conn1">Connect TronLink wallet</button>
-  <button class="btn btn-p hidden" id="btn-gen">Generate seller link</button>
-  <p class="smsg" id="msg1"></p>
-</div>
-<div class="card hidden" id="p2">
-  <div class="ctitle">Accept the deal</div>
-  <div class="csub">Review this deal and connect your wallet. Your address is saved automatically.</div>
-  <div class="dbox">
-    <div class="drow"><span>Buyer</span><span id="d2-buyer">-</span></div>
-    <div class="drow"><span>Seller</span><span id="d2-seller">-</span></div>
-    <div class="drow"><span>Amount</span><span id="d2-amount">-</span></div>
+<div class="bg-canvas"><div class="orb orb1"></div><div class="orb orb2"></div><div class="orb orb3"></div></div>
+<div class="page">
+<nav>
+  <a href="#" class="nav-logo" id="nav-home">Global<span>EscrowX</span></a>
+  <div class="nav-badge">Nile Testnet</div>
+</nav>
+<div id="hero-section">
+  <div class="hero">
+    <div class="hero-eyebrow">Trustless Escrow on TRON</div>
+    <h1>Safe deals.<br/><em>No trust required.</em></h1>
+    <p>Lock USDT in a smart contract. Seller delivers. You release.<br/>Nobody can steal it - not even us.</p>
+    <button class="hero-cta" id="hero-cta-btn">Create a deal &rarr;</button>
   </div>
-  <div class="wbadge" id="wb2"><div class="wdot" id="wd2"></div><div class="winfo"><div class="wlabel">Your wallet (seller)</div><div class="waddr" id="wa2">Not connected</div></div></div>
-  <button class="btn btn-s" id="btn-conn2">Connect wallet to accept</button>
-  <button class="btn btn-p hidden" id="btn-accept">Accept and generate payment link</button>
-  <p class="smsg" id="msg2"></p>
-</div>
-<div class="card hidden" id="p3">
-  <div class="ctitle">Pay into escrow</div>
-  <div class="csub">Connect wallet to lock funds. Seller gets paid only after you confirm delivery.</div>
-  <div class="dbox">
-    <div class="drow"><span>Amount</span><span id="d3-amount">-</span></div>
-    <div class="drow"><span>Seller wallet</span><span id="d3-seller">-</span></div>
+  <div class="trust-bar">
+    <div class="trust-item">&#x2713; Smart contract secured</div>
+    <div class="trust-item">&#x2713; Funds locked on-chain</div>
+    <div class="trust-item">&#x2713; No wallet address typing</div>
+    <div class="trust-item">&#x2713; Instant USDT settlement</div>
   </div>
-  <div id="pay-link-wrap" class="hidden">
-    <div class="linklabel">Payment link - send to buyer</div>
-    <div class="lbox"><span id="pay-link-text">-</span><button class="cbtn" id="copy-pay-btn">Copy</button></div>
+  <div class="features">
+    <div class="feature"><div class="feature-icon">&#x1F512;</div><h3>Funds locked on-chain</h3><p>USDT is held by a smart contract - not us, not the seller. Nobody touches it until you say so.</p></div>
+    <div class="feature"><div class="feature-icon">&#x26A1;</div><h3>No wallets to type</h3><p>Connect TronLink once. Your wallet address is captured automatically. No copying, no errors.</p></div>
+    <div class="feature"><div class="feature-icon">&#x1F30D;</div><h3>Built for global deals</h3><p>Send a link. The other party connects their wallet. The whole flow is guided step by step.</p></div>
   </div>
-  <div class="wbadge" id="wb3"><div class="wdot" id="wd3"></div><div class="winfo"><div class="wlabel">Your wallet (buyer)</div><div class="waddr" id="wa3">Not connected</div></div><div class="wbal hidden" id="wbal3"></div></div>
-  <button class="btn btn-s" id="btn-conn3">Connect wallet</button>
-  <button class="btn btn-p hidden" id="btn-pay">Lock funds in escrow</button>
-  <p class="smsg" id="msg3"></p>
 </div>
-<div class="card hidden" id="p3b">
-  <div class="ctitle">Waiting for delivery</div>
-  <div class="csub">Funds are locked. Notify the seller and wait for delivery.</div>
-  <div class="dbox">
-    <div class="drow"><span>Status</span><span><span class="pill-g"><span class="dot"></span>Funds locked</span></span></div>
-    <div class="drow"><span>Amount</span><span id="d3b-amount">-</span></div>
-    <div class="drow"><span>Escrow ID</span><span id="d3b-id">-</span></div>
+<div id="flow-section" class="hidden">
+  <div class="steps-wrap">
+    <div class="steps">
+      <div class="step active" id="s1"><div class="snum">01</div><div class="slabel">Create<br/>deal</div></div>
+      <div class="step" id="s2"><div class="snum">02</div><div class="slabel">Seller<br/>accepts</div></div>
+      <div class="step" id="s3"><div class="snum">03</div><div class="slabel">Buyer<br/>pays</div></div>
+      <div class="step" id="s4"><div class="snum">04</div><div class="slabel">Release<br/>funds</div></div>
+    </div>
   </div>
-  <div class="inst"><div class="inum">1</div><div class="itext">Tell the <strong>seller</strong> that payment is locked.</div></div>
-  <div class="inst"><div class="inum">2</div><div class="itext">Wait for them to <strong>deliver</strong> what was agreed.</div></div>
-  <div class="inst"><div class="inum">3</div><div class="itext">Once satisfied, <strong>release the payment</strong> below.</div></div>
-  <button class="btn btn-p" style="margin-top:16px" id="btn-to4">Delivery received - release funds</button>
-  <button class="btn btn-d" id="btn-torefund">Something went wrong - refund me</button>
-</div>
-<div class="card hidden" id="p4">
-  <div class="ctitle">Release or refund</div>
-  <div class="csub">Releasing sends USDT to the seller permanently.</div>
-  <div class="dbox">
-    <div class="drow"><span>Amount</span><span id="d4-amount">-</span></div>
-    <div class="drow"><span>Seller wallet</span><span id="d4-seller">-</span></div>
-    <div class="drow"><span>Escrow ID</span><span id="d4-id">-</span></div>
+  <div class="card-wrap">
+    <div class="card" id="p1">
+      <div class="card-icon">&#x1F4CB;</div>
+      <div class="ctitle">Create a deal</div>
+      <div class="csub">Enter details and connect your wallet. No address typing needed.</div>
+      <div class="field"><label>Your email (buyer)</label><input id="f-buyer" type="email" placeholder="you@example.com"/></div>
+      <div class="field"><label>Seller email</label><input id="f-seller" type="email" placeholder="seller@example.com"/></div>
+      <div class="field"><label>Amount (USDT)</label><div class="amount-wrap"><span class="amount-prefix">USDT</span><input id="f-amount" type="number" placeholder="0.00" min="0.01" step="0.01" style="padding-left:58px"/></div></div>
+      <div class="hr"></div>
+      <div class="wbadge" id="wb1"><div class="wdot" id="wd1"></div><div class="winfo"><div class="wlabel">Your wallet (buyer)</div><div class="waddr" id="wa1">Not connected</div></div><div class="wbal hidden" id="wbal1"></div></div>
+      <button class="btn btn-s" id="btn-conn1">Connect TronLink wallet</button>
+      <button class="btn btn-p hidden" id="btn-gen">Generate seller link &rarr;</button>
+      <p class="smsg" id="msg1"></p>
+    </div>
+    <div class="card hidden" id="p2">
+      <div class="card-icon">&#x1F91D;</div>
+      <div class="ctitle">Accept the deal</div>
+      <div class="csub">Review and connect your wallet to accept. Address saved automatically.</div>
+      <div class="dbox">
+        <div class="drow"><span>Buyer</span><span id="d2-buyer">-</span></div>
+        <div class="drow"><span>Seller</span><span id="d2-seller">-</span></div>
+        <div class="drow"><span>Amount</span><span><span class="amount-val" id="d2-amount">-</span></span></div>
+      </div>
+      <div class="wbadge" id="wb2"><div class="wdot" id="wd2"></div><div class="winfo"><div class="wlabel">Your wallet (seller)</div><div class="waddr" id="wa2">Not connected</div></div></div>
+      <button class="btn btn-s" id="btn-conn2">Connect wallet to accept</button>
+      <button class="btn btn-p hidden" id="btn-accept">Accept and generate payment link &rarr;</button>
+      <p class="smsg" id="msg2"></p>
+    </div>
+    <div class="card hidden" id="p3">
+      <div class="card-icon">&#x1F4B0;</div>
+      <div class="ctitle">Pay into escrow</div>
+      <div class="csub">Connect wallet to lock funds. Seller gets paid only after you confirm delivery.</div>
+      <div class="dbox">
+        <div class="drow"><span>Amount</span><span><span class="amount-val" id="d3-amount">-</span></span></div>
+        <div class="drow"><span>Seller wallet</span><span id="d3-seller">-</span></div>
+      </div>
+      <div id="pay-link-wrap" class="hidden link-section">
+        <div class="link-label">Payment link - send to buyer</div>
+        <div class="lbox"><span id="pay-link-text">-</span><button class="cbtn" id="copy-pay-btn">Copy</button></div>
+      </div>
+      <div class="wbadge" id="wb3"><div class="wdot" id="wd3"></div><div class="winfo"><div class="wlabel">Your wallet (buyer)</div><div class="waddr" id="wa3">Not connected</div></div><div class="wbal hidden" id="wbal3"></div></div>
+      <button class="btn btn-s" id="btn-conn3">Connect wallet</button>
+      <button class="btn btn-p hidden" id="btn-pay">Lock funds in escrow</button>
+      <p class="smsg" id="msg3"></p>
+    </div>
+    <div class="card hidden" id="p3b">
+      <div class="card-icon">&#x23F3;</div>
+      <div class="ctitle">Waiting for delivery</div>
+      <div class="csub">Funds are locked on-chain. Notify the seller and wait.</div>
+      <div class="dbox">
+        <div class="drow"><span>Status</span><span><span class="pill-g"><span class="dot pulse"></span>Funds locked</span></span></div>
+        <div class="drow"><span>Amount</span><span><span class="amount-val" id="d3b-amount">-</span></span></div>
+        <div class="drow"><span>Escrow ID</span><span id="d3b-id">-</span></div>
+      </div>
+      <div class="inst"><div class="inum">1</div><div class="itext">Tell the <strong>seller</strong> that funds are locked and they can begin.</div></div>
+      <div class="inst"><div class="inum">2</div><div class="itext">Wait for them to <strong>deliver</strong> what was agreed.</div></div>
+      <div class="inst"><div class="inum">3</div><div class="itext">Once satisfied, <strong>release the payment</strong> below.</div></div>
+      <button class="btn btn-p" style="margin-top:20px" id="btn-to4">Delivery received - release funds</button>
+      <button class="btn btn-d" id="btn-torefund">Something went wrong - refund me</button>
+    </div>
+    <div class="card hidden" id="p4">
+      <div class="card-icon">&#x1F513;</div>
+      <div class="ctitle">Release or refund</div>
+      <div class="csub">Releasing sends USDT to the seller permanently.</div>
+      <div class="dbox">
+        <div class="drow"><span>Amount</span><span><span class="amount-val" id="d4-amount">-</span></span></div>
+        <div class="drow"><span>Seller wallet</span><span id="d4-seller">-</span></div>
+        <div class="drow"><span>Escrow ID</span><span id="d4-id">-</span></div>
+      </div>
+      <div class="wbadge on"><div class="wdot on"></div><div class="winfo"><div class="wlabel">Your wallet (buyer)</div><div class="waddr" id="wa4">-</div></div></div>
+      <button class="btn btn-p" id="btn-release">Release payment to seller</button>
+      <button class="btn btn-d" id="btn-refund">Refund - return funds to me</button>
+      <p class="smsg" id="msg4"></p>
+    </div>
+    <div class="card hidden" id="p-ok" style="text-align:center">
+      <div class="sico">&#x2713;</div>
+      <div class="ctitle" id="ok-title">Deal complete</div>
+      <div class="csub" id="ok-sub">Funds released to the seller.</div>
+      <div class="txh hidden" id="ok-tx"></div>
+      <button class="btn btn-s" style="margin-top:24px" onclick="location.href=location.pathname">Start a new deal</button>
+    </div>
   </div>
-  <div class="wbadge on"><div class="wdot on"></div><div class="winfo"><div class="wlabel">Your wallet (buyer)</div><div class="waddr" id="wa4">-</div></div></div>
-  <button class="btn btn-p" id="btn-release">Release payment to seller</button>
-  <button class="btn btn-d" id="btn-refund">Refund - return funds to me</button>
-  <p class="smsg" id="msg4"></p>
 </div>
-<div class="card hidden" id="p-ok">
-  <div class="sico">V</div>
-  <div class="ctitle" style="text-align:center" id="ok-title">Deal complete</div>
-  <div class="csub" style="text-align:center" id="ok-sub">Funds released to the seller.</div>
-  <p class="txh" id="ok-tx"></p>
-  <button class="btn btn-s" style="margin-top:18px" onclick="location.href=location.pathname">Start a new deal</button>
+<footer>
+  <div class="footer-logo">GlobalEscrowX</div>
+  <div class="footer-note">Powered by TRON - Smart contract secured - globalescrowx.com</div>
+</footer>
 </div>
 <script>
 const ESCROW_ADDR="TMjyyyTUfz5FNuDG6eK1YjASXFKdLXg2tG";
 const USDT_ADDR="TXYZopYRdj2D9XRtbG411XZZ3kM5VkAeBf";
 const D={buyer:"",seller:"",amount:0,buyerWallet:"",sellerWallet:"",escrowId:null};
+function startFlow(){document.getElementById("hero-section").classList.add("hidden");document.getElementById("flow-section").classList.remove("hidden");}
+document.getElementById("hero-cta-btn").addEventListener("click",startFlow);
+document.getElementById("nav-home").addEventListener("click",function(e){e.preventDefault();document.getElementById("hero-section").classList.remove("hidden");document.getElementById("flow-section").classList.add("hidden");});
 function goStep(n){[1,2,3,4].forEach(i=>{const e=document.getElementById("s"+i);e.classList.remove("active","done");if(i<n)e.classList.add("done");if(i===n)e.classList.add("active");});["p1","p2","p3","p3b","p4","p-ok"].forEach(id=>document.getElementById(id).classList.add("hidden"));}
-function show(id){document.getElementById(id).classList.remove("hidden");}
+function show(id){const el=document.getElementById(id);el.classList.remove("hidden");el.style.animation="none";el.offsetHeight;el.style.animation="slidein 0.4s ease both";}
 function msg(id,t,type){const e=document.getElementById(id);e.textContent=t;e.className="smsg msg-"+(type||"i");}
-function short(a){return a?a.slice(0,6)+"..."+a.slice(-4):"-";}
+function short(a){return a?a.slice(0,6)+"..."+a.slice(-4):"--";}
 function wait(ms){return new Promise(r=>setTimeout(r,ms));}
 function setWallet(badgeId,dotId,addrId,balId,addr,bal){document.getElementById(badgeId).classList.add("on");document.getElementById(dotId).classList.add("on");document.getElementById(addrId).textContent=short(addr);if(balId){const el=document.getElementById(balId);el.textContent=bal+" USDT";el.classList.remove("hidden");}}
 async function connectWallet(){if(typeof window.tronLink==="undefined")throw new Error("TronLink not found. Please install it.");const res=await window.tronLink.request({method:"tron_requestAccounts"});if(res.code!==200)throw new Error("Connection rejected.");return window.tronWeb.defaultAddress.base58;}
 async function getBalance(addr){try{const c=await window.tronWeb.contract().at(USDT_ADDR);const r=await c.balanceOf(addr).call();return(Number(r)/1000000).toFixed(2);}catch(e){return"?";}}
-async function sendTx(contractAddr,fn,params){const from=window.tronWeb.defaultAddress.base58;const tx=await window.tronWeb.transactionBuilder.triggerSmartContract(contractAddr,fn,{feeLimit:100000000,from},params,from);const signed=await window.tronWeb.trx.sign(tx.transaction);const res=await window.tronWeb.trx.sendRawTransaction(signed);return res.txid||res.transaction.txID;}
+async function sendTx(contractAddr,fn,params){const from=window.tronWeb.defaultAddress.base58;const tx=await window.tronWeb.transactionBuilder.triggerSmartContract(contractAddr,fn,{feeLimit:100000000,from},params,from);const signed=await window.tronWeb.trx.sign(tx.transaction);const res=await window.tronWeb.trx.sendRawTransaction(signed);return res.txid||(res.transaction&&res.transaction.txID);}
 function makeCopy(btnId,textId){document.getElementById(btnId).addEventListener("click",()=>{navigator.clipboard.writeText(document.getElementById(textId).textContent).then(()=>{document.getElementById(btnId).textContent="Copied";setTimeout(()=>document.getElementById(btnId).textContent="Copy",2000);});});}
-document.getElementById("btn-conn1").addEventListener("click",async()=>{msg("msg1","Connecting...","i");try{const addr=await connectWallet();const bal=await getBalance(addr);D.buyerWallet=addr;setWallet("wb1","wd1","wa1","wbal1",addr,bal);document.getElementById("btn-conn1").classList.add("hidden");document.getElementById("btn-gen").classList.remove("hidden");msg("msg1","Wallet connected.","s");}catch(e){msg("msg1",e.message,"e");}});
-document.getElementById("btn-gen").addEventListener("click",()=>{const b=document.getElementById("f-buyer").value.trim();const s=document.getElementById("f-seller").value.trim();const a=parseFloat(document.getElementById("f-amount").value);if(!b||!b.includes("@"))return msg("msg1","Enter a valid buyer email.","e");if(!s||!s.includes("@"))return msg("msg1","Enter a valid seller email.","e");if(!a||a<=0)return msg("msg1","Enter a valid amount.","e");D.buyer=b;D.seller=s;D.amount=a;const link=location.origin+location.pathname+"?step=seller&bemail="+encodeURIComponent(b)+"&semail="+encodeURIComponent(s)+"&amount="+a+"&bwallet="+D.buyerWallet;document.getElementById("d2-buyer").textContent=b;document.getElementById("d2-seller").textContent=s;document.getElementById("d2-amount").textContent=a+" USDT";let lb=document.getElementById("seller-link-box");if(!lb){lb=document.createElement("div");lb.id="seller-link-box";lb.innerHTML="<div class=\"linklabel\" style=\"margin-bottom:6px\">Send this link to the seller</div><div class=\"lbox\"><span id=\"seller-link-text\"></span><button class=\"cbtn\" id=\"copy-seller-btn\">Copy</button></div>";document.getElementById("p2").insertBefore(lb,document.querySelector("#p2 .wbadge"));}document.getElementById("seller-link-text").textContent=link;makeCopy("copy-seller-btn","seller-link-text");goStep(2);show("p2");});
-document.getElementById("btn-conn2").addEventListener("click",async()=>{msg("msg2","Detecting wallet...","i");try{const addr=await connectWallet();D.sellerWallet=addr;setWallet("wb2","wd2","wa2",null,addr,"");document.getElementById("btn-conn2").classList.add("hidden");document.getElementById("btn-accept").classList.remove("hidden");msg("msg2","Wallet connected and saved automatically.","s");}catch(e){msg("msg2",e.message,"e");}});
+document.getElementById("btn-conn1").addEventListener("click",async()=>{msg("msg1","Connecting...","i");try{const addr=await connectWallet();const bal=await getBalance(addr);D.buyerWallet=addr;setWallet("wb1","wd1","wa1","wbal1",addr,bal);document.getElementById("btn-conn1").classList.add("hidden");document.getElementById("btn-gen").classList.remove("hidden");msg("msg1","Wallet connected - "+short(addr),"s");}catch(e){msg("msg1",e.message,"e");}});
+document.getElementById("btn-gen").addEventListener("click",()=>{const b=document.getElementById("f-buyer").value.trim();const s=document.getElementById("f-seller").value.trim();const a=parseFloat(document.getElementById("f-amount").value);if(!b||!b.includes("@"))return msg("msg1","Enter a valid buyer email.","e");if(!s||!s.includes("@"))return msg("msg1","Enter a valid seller email.","e");if(!a||a<=0)return msg("msg1","Enter a valid USDT amount.","e");D.buyer=b;D.seller=s;D.amount=a;const link=location.origin+location.pathname+"?step=seller&bemail="+encodeURIComponent(b)+"&semail="+encodeURIComponent(s)+"&amount="+a+"&bwallet="+D.buyerWallet;document.getElementById("d2-buyer").textContent=b;document.getElementById("d2-seller").textContent=s;document.getElementById("d2-amount").textContent=a+" USDT";let lb=document.getElementById("seller-link-box");if(!lb){lb=document.createElement("div");lb.id="seller-link-box";lb.className="link-section";lb.innerHTML='<div class="link-label">Send this link to the seller</div><div class="lbox"><span id="seller-link-text"></span><button class="cbtn" id="copy-seller-btn">Copy</button></div>';document.getElementById("p2").insertBefore(lb,document.querySelector("#p2 .wbadge"));}document.getElementById("seller-link-text").textContent=link;makeCopy("copy-seller-btn","seller-link-text");goStep(2);show("p2");});
+document.getElementById("btn-conn2").addEventListener("click",async()=>{msg("msg2","Detecting wallet...","i");try{const addr=await connectWallet();D.sellerWallet=addr;setWallet("wb2","wd2","wa2",null,addr,"");document.getElementById("btn-conn2").classList.add("hidden");document.getElementById("btn-accept").classList.remove("hidden");msg("msg2","Wallet saved automatically.","s");}catch(e){msg("msg2",e.message,"e");}});
 document.getElementById("btn-accept").addEventListener("click",()=>{const link=location.origin+location.pathname+"?step=pay&bemail="+encodeURIComponent(D.buyer)+"&semail="+encodeURIComponent(D.seller)+"&amount="+D.amount+"&bwallet="+D.buyerWallet+"&swallet="+D.sellerWallet;document.getElementById("d3-amount").textContent=D.amount+" USDT";document.getElementById("d3-seller").textContent=short(D.sellerWallet);document.getElementById("pay-link-text").textContent=link;document.getElementById("pay-link-wrap").classList.remove("hidden");makeCopy("copy-pay-btn","pay-link-text");goStep(3);show("p3");});
-document.getElementById("btn-conn3").addEventListener("click",async()=>{msg("msg3","Detecting wallet...","i");try{const addr=await connectWallet();const bal=await getBalance(addr);D.buyerWallet=addr;setWallet("wb3","wd3","wa3","wbal3",addr,bal);document.getElementById("btn-conn3").classList.add("hidden");document.getElementById("btn-pay").classList.remove("hidden");msg("msg3","Wallet detected. Ready to pay.","s");}catch(e){msg("msg3",e.message,"e");}});
+document.getElementById("btn-conn3").addEventListener("click",async()=>{msg("msg3","Detecting wallet...","i");try{const addr=await connectWallet();const bal=await getBalance(addr);D.buyerWallet=addr;setWallet("wb3","wd3","wa3","wbal3",addr,bal);document.getElementById("btn-conn3").classList.add("hidden");document.getElementById("btn-pay").classList.remove("hidden");msg("msg3","Wallet detected - "+bal+" USDT available.","s");}catch(e){msg("msg3",e.message,"e");}});
 document.getElementById("btn-pay").addEventListener("click",async()=>{const btn=document.getElementById("btn-pay");btn.disabled=true;const sun=Math.floor(D.amount*1000000);try{msg("msg3","Approving USDT... (1 of 2)","i");await sendTx(USDT_ADDR,"approve(address,uint256)",[{type:"address",value:ESCROW_ADDR},{type:"uint256",value:sun}]);msg("msg3","Creating escrow... (2 of 2)","i");await wait(10000);await sendTx(ESCROW_ADDR,"createEscrow(address,uint256)",[{type:"address",value:D.sellerWallet},{type:"uint256",value:sun}]);await wait(3000);const EABI=[{"name":"getBuyerEscrows","type":"Function","inputs":[{"name":"_buyer","type":"address"}],"outputs":[{"name":"","type":"uint256[]"}]}];const ec=await window.tronWeb.contract(EABI,ESCROW_ADDR);const ids=await ec.getBuyerEscrows(D.buyerWallet).call();if(ids&&ids.length>0)D.escrowId=Number(ids[ids.length-1]);document.getElementById("d3b-amount").textContent=D.amount+" USDT";document.getElementById("d3b-id").textContent=D.escrowId!==null?"#"+D.escrowId:"-";document.getElementById("d4-amount").textContent=D.amount+" USDT";document.getElementById("d4-seller").textContent=short(D.sellerWallet);document.getElementById("d4-id").textContent=D.escrowId!==null?"#"+D.escrowId:"-";document.getElementById("wa4").textContent=short(D.buyerWallet);goStep(3);show("p3b");}catch(e){msg("msg3","Error: "+e.message,"e");btn.disabled=false;}});
 document.getElementById("btn-to4").addEventListener("click",()=>{goStep(4);show("p4");});
 document.getElementById("btn-torefund").addEventListener("click",()=>{goStep(4);show("p4");});
-async function doAction(action,okTitle,okSub){const btn=document.getElementById("btn-"+action);btn.disabled=true;msg("msg4","Processing...","i");try{const fn=action==="release"?"releaseEscrow(uint256)":"refundEscrow(uint256)";const txId=await sendTx(ESCROW_ADDR,fn,[{type:"uint256",value:D.escrowId}]);document.getElementById("ok-title").textContent=okTitle;document.getElementById("ok-sub").textContent=okSub;document.getElementById("ok-tx").textContent=txId?"TX: "+txId:"";goStep(4);["p1","p2","p3","p3b","p4"].forEach(id=>document.getElementById(id).classList.add("hidden"));show("p-ok");}catch(e){msg("msg4","Error: "+e.message,"e");btn.disabled=false;}}
+async function doAction(action,okTitle,okSub){const btn=document.getElementById("btn-"+action);btn.disabled=true;msg("msg4","Processing...","i");try{const fn=action==="release"?"releaseEscrow(uint256)":"refundEscrow(uint256)";const txId=await sendTx(ESCROW_ADDR,fn,[{type:"uint256",value:D.escrowId}]);document.getElementById("ok-title").textContent=okTitle;document.getElementById("ok-sub").textContent=okSub;const txEl=document.getElementById("ok-tx");if(txId){txEl.textContent="TX: "+txId;txEl.classList.remove("hidden");}goStep(4);["p1","p2","p3","p3b","p4"].forEach(id=>document.getElementById(id).classList.add("hidden"));show("p-ok");}catch(e){msg("msg4","Error: "+e.message,"e");btn.disabled=false;}}
 document.getElementById("btn-release").addEventListener("click",()=>doAction("release","Deal complete","Funds released to the seller."));
 document.getElementById("btn-refund").addEventListener("click",()=>doAction("refund","Refund complete","Funds returned to your wallet."));
-(function(){const p=new URLSearchParams(window.location.search);const step=p.get("step");if(!step)return;D.buyer=p.get("bemail")||"";D.seller=p.get("semail")||"";D.amount=parseFloat(p.get("amount"))||0;D.buyerWallet=p.get("bwallet")||"";D.sellerWallet=p.get("swallet")||"";if(step==="seller"){document.getElementById("d2-buyer").textContent=D.buyer;document.getElementById("d2-seller").textContent=D.seller;document.getElementById("d2-amount").textContent=D.amount+" USDT";goStep(2);show("p2");}if(step==="pay"){document.getElementById("d3-amount").textContent=D.amount+" USDT";document.getElementById("d3-seller").textContent=short(D.sellerWallet);goStep(3);show("p3");}})();
+(function(){const p=new URLSearchParams(window.location.search);const step=p.get("step");if(!step)return;D.buyer=p.get("bemail")||"";D.seller=p.get("semail")||"";D.amount=parseFloat(p.get("amount"))||0;D.buyerWallet=p.get("bwallet")||"";D.sellerWallet=p.get("swallet")||"";startFlow();if(step==="seller"){document.getElementById("d2-buyer").textContent=D.buyer;document.getElementById("d2-seller").textContent=D.seller;document.getElementById("d2-amount").textContent=D.amount+" USDT";goStep(2);show("p2");}if(step==="pay"){document.getElementById("d3-amount").textContent=D.amount+" USDT";document.getElementById("d3-seller").textContent=short(D.sellerWallet);goStep(3);show("p3");}})();
 </script>
 </body>
 </html>
